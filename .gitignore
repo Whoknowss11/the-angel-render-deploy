@@ -1,0 +1,4 @@
+.env*
+.angelz-deploy.zip
+app/
+node_modules/

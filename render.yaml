@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: the-angel-standby
+    runtime: node
+    plan: free
+    region: ohio
+    buildCommand: node bootstrap.mjs
+    startCommand: cd app && node --use-system-ca dist/index.js
+    healthCheckPath: /healthz
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.18.0
+      - key: SKIP_INSTALL_DEPS
+        value: true
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: ./data/the-angel.sqlite
+      - key: PYTHONPATH
+        value: ./.pythonlibs
+      - key: CLOUD_RESTORE_ON_START
+        value: true
+      - key: CLOUD_BACKUP_INTERVAL_SECONDS
+        value: 300
+      - key: LOCAL_LLM_ENABLED
+        value: false
+      - key: DISCORD_MEMBER_JOIN_EVENTS
+        value: true
+      - key: DISCORD_LOGIN_ENABLED
+        value: false
+      - key: DEPLOY_ARCHIVE_KEY
+        sync: false
+      - key: CLOUD_BACKUP_URL
+        sync: false
+      - key: CLOUD_BACKUP_TOKEN
+        sync: false
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_GUILD_ID
+        sync: false
+      - key: ANGELZ_CREATOR_ROLE_ID
+        sync: false
+      - key: ANGELZ_CREATOR_AU_ROLE_ID
+        sync: false
+      - key: ANGELZ_MANAGER_ROLE_ID
+        sync: false
+      - key: ANGELZ_MANAGER_HQ_ROLE_ID
+        sync: false
+      - key: ANGELZ_MANAGER_US_ROLE_ID
+        sync: false
+      - key: ANGELZ_MANAGER_AU_ROLE_ID
+        sync: false
+      - key: ANGELZ_ADMIN_ROLE_ID
+        sync: false
