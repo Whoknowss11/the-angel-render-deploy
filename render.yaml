@@ -28,7 +28,7 @@ services:
       - key: DISCORD_MEMBER_JOIN_EVENTS
         value: true
       - key: DISCORD_LOGIN_ENABLED
-        value: false
+        value: true
       - key: DEPLOY_ARCHIVE_KEY
         sync: false
       - key: CLOUD_BACKUP_URL
