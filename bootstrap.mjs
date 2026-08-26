@@ -58,10 +58,18 @@ try {
   await run(npmCommand, [...npmPrefix, "ci", "--ignore-scripts"], { cwd: appDirectory, env: buildEnvironment });
   await run(npmCommand, [...npmPrefix, "run", "build"], { cwd: appDirectory, env: buildEnvironment });
   if (process.platform !== "win32") {
+    const pythonLibraryDirectory = resolve(appDirectory, ".pythonlibs");
     await run("python3", [
       "-m", "pip", "install", "--disable-pip-version-check", "--no-cache-dir",
-      "--target", resolve(appDirectory, ".pythonlibs"), "Pillow==12.3.0"
+      "--upgrade", "--force-reinstall", "--target", pythonLibraryDirectory,
+      "Pillow==12.3.0"
     ], { cwd: appDirectory, env: buildEnvironment });
+    await run("python3", [
+      "-c", "from PIL import Image, ImageDraw, ImageFont; print('Pillow runtime verified')"
+    ], {
+      cwd: appDirectory,
+      env: { ...buildEnvironment, PYTHONPATH: pythonLibraryDirectory },
+    });
   }
   console.log("Encrypted Angel Bot bundle verified and built.");
 } finally {
