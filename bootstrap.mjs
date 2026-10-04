@@ -65,7 +65,7 @@ try {
   overlayDecipher.setAuthTag(overlayPayload.subarray(20, 36));
   const overlay = JSON.parse(gunzipSync(Buffer.concat([overlayDecipher.update(overlayPayload.subarray(36)), overlayDecipher.final()])).toString("utf8"));
   if (overlay.baseArchiveSha256 !== createHash("sha256").update(archive).digest("hex")) throw new Error("Recovery overlay does not match the deployed baseline.");
-  const allowed = ["src/manager-system.ts", "src/manager-recovery-20260909.ts", "src/health-system.ts", "src/index.ts", "src/cloud-persistence.ts"];
+  const allowed = ["src/manager-system.ts", "src/manager-recovery-20260909.ts", "src/health-system.ts", "src/index.ts", "src/cloud-persistence.ts", "src/recruitment-system.ts", "src/manager-tool-system.ts"];
   if (JSON.stringify(Object.keys(overlay.files).sort()) !== JSON.stringify([...allowed].sort())) throw new Error("Unexpected recovery overlay files.");
   for (const path of allowed) {
     if (typeof overlay.files[path] !== "string") throw new Error("Invalid recovery source.");
