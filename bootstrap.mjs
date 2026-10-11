@@ -65,8 +65,9 @@ try {
   overlayDecipher.setAuthTag(overlayPayload.subarray(20, 36));
   const overlay = JSON.parse(gunzipSync(Buffer.concat([overlayDecipher.update(overlayPayload.subarray(36)), overlayDecipher.final()])).toString("utf8"));
   if (overlay.baseArchiveSha256 !== createHash("sha256").update(archive).digest("hex")) throw new Error("Recovery overlay does not match the deployed baseline.");
-  const allowed = ["src/manager-system.ts","src/manager-recovery-20260909.ts","src/health-system.ts","src/index.ts","src/cloud-persistence.ts","src/recruitment-system.ts","src/manager-tool-system.ts","src/academy-v3-router.ts","src/manager-training-observer.ts","src/manager-training-pilot.ts","src/manager-training-policy.ts","src/manager-training-protection.ts","src/manager-training-runtime.d.mts","src/manager-training-runtime.mjs","src/manager-training-upload.ts","src/ticket-system.ts","src/battle-system.ts","src/channel-consolidation-20261011.ts"];
+  const allowed = ["src/manager-system.ts","src/manager-recovery-20260909.ts","src/health-system.ts","src/index.ts","src/cloud-persistence.ts","src/recruitment-system.ts","src/manager-tool-system.ts","src/academy-v3-router.ts","src/manager-training-observer.ts","src/manager-training-pilot.ts","src/manager-training-policy.ts","src/manager-training-protection.ts","src/manager-training-runtime.d.mts","src/manager-training-runtime.mjs","src/manager-training-upload.ts","src/ticket-system.ts","src/battle-system.ts","src/channel-consolidation-20261011.ts","src/config.ts","src/web-server.ts","src/creator-hub-runtime.mjs","src/creator-hub-runtime.d.mts","src/creator-hub/handler.mjs","src/creator-hub/policy.mjs","src/creator-hub/source.mjs","src/creator-hub/live-adapters.mjs","src/creator-hub/training-protocol.mjs","src/creator-hub/training-client.mjs","src/creator-hub/bot-mirror.mjs","src/creator-hub/node-route.mjs","src/creator-hub/bot-integration.mjs","src/creator-hub/standby-preflight.mjs"];
   if (JSON.stringify(Object.keys(overlay.files).sort()) !== JSON.stringify([...allowed].sort())) throw new Error("Unexpected recovery overlay files.");
+  await mkdir(resolve(appDirectory, "src/creator-hub"), { recursive: true });
   for (const path of allowed) {
     if (typeof overlay.files[path] !== "string") throw new Error("Invalid recovery source.");
     await writeFile(resolve(appDirectory, path), overlay.files[path]);
@@ -75,6 +76,10 @@ try {
   await run(npmCommand, [...npmPrefix, "ci", "--ignore-scripts"], { cwd: appDirectory, env: buildEnvironment });
   await run(npmCommand, [...npmPrefix, "run", "build"], { cwd: appDirectory, env: buildEnvironment });
   await copyFile(resolve(appDirectory, "src/manager-training-runtime.mjs"), resolve(appDirectory, "dist/manager-training-runtime.mjs"));
+  await mkdir(resolve(appDirectory, "dist/creator-hub"), { recursive: true });
+  for (const path of allowed.filter(path => path.startsWith("src/creator-hub") && path.endsWith(".mjs"))) {
+    await copyFile(resolve(appDirectory, path), resolve(appDirectory, path.replace(/^src\//, "dist/")));
+  }
   if (process.platform !== "win32") {
     const pythonLibraryDirectory = resolve(appDirectory, ".pythonlibs");
     await run("python3", [
